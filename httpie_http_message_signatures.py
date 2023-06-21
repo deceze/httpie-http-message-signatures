@@ -65,6 +65,15 @@ def add_digest(configuration: HostConfiguration, request: PreparedRequest):
         request.headers['Content-Digest'] = str(Dictionary({'sha-256': hashlib.sha256(request.body).digest()}))
 
 
+def prepare_headers(request: PreparedRequest):
+    """
+    Header values from the command line will be coming as bytes and aren't converted anywhere else, which will
+    lead to an incorrect signature. For arbitrary headers (like Date) to be signable, they need to be converted
+    to strs.
+    """
+    request.prepare_headers({k: v.decode('ascii') if isinstance(v, bytes) else v for k, v in request.headers.items()})
+
+
 def resolve_covered_component_ids(components: Sequence[str], request: PreparedRequest) -> Sequence[str]:
     resolved_components = []
 
@@ -123,5 +132,6 @@ class HttpSignatureAuth(AuthBase):
         host = urlsplit(r.url).netloc
         configuration = self.configuration_for(host)
         add_digest(configuration, r)
+        prepare_headers(r)
         sign(configuration, r)
         return r

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "httpie-http-message-signatures"
-version = "0.0.1"
+version = "0.0.2"
 description = "HTTP Message Signatures plugin for HTTPie"
 authors = ["David Zentgraf <david@kunststube.net>"]
 readme = "README.md"
